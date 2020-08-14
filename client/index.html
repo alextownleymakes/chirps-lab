@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- <link  href="style.css"> -->
+    <title>CHIRPER</title>
+</head>
+
+<body>
+    <div id="root">
+        <button id="newChirp" style="margin: 30px;">NEW CHIRP</button>
+    </div>
+    <div id="displayChirps">
+
+    </div>
+    <div class="overlay"
+        style="position: fixed; top: 0; left: 0; height: 100vh; width: 100vw; background-color: rgba(200,200,200,.8);"
+        id="postOverlay">
+        <div class="new-chirp-dialog"
+            style="position: fixed; top: 35%; left: 30%; width: 40%; height: 30%; background-color: #ccc; margin: auto; padding: 10%; border: 1px solid #aaa; border-radius: 10px;"
+            id="newChirpDialog">
+            <input id="ncUser" placeholder="username">
+            <input id="ncChirp" placeholder="chirp">
+            <button id="submitChirp">CHIRP</button>
+        </div>
+    </div>
+    <div class="overlay"
+        style="position: fixed; top: 0; left: 0; height: 100vh; width: 100vw; background-color: rgba(200,200,200,.8);"
+        id="editOverlay">
+        <div class="edit-chirp-dialog"
+            style="position: fixed; top: 35%; left: 30%; width: 40%; height: 30%; background-color: #ccc; margin: auto; padding: 10%; border: 1px solid #aaa; border-radius: 10px;"
+            id="editChirpDialog">
+            EDIT<br />
+            <input id="ecUser" placeholder="username">
+            <input id="ecChirp" placeholder="chirp">
+            <button id="submitChirp">CHIRP</button>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+        function getChirps() {
+            $("#displayChirps").html("");
+            $.get("/api/chirps")
+                .then(data => {
+                    console.log(data)
+                    $.map(data, (chirp, i) => {
+                        if (i !== "nextid") {
+                            console.log(chirp)
+                            $("#displayChirps").prepend('<div class="card" style="width: 30%; padding: 2%; margin: 10px; display: inline-flex; background-color: #f4f6f8; box-shadow: 5px 5px 5px #eee;"><div class="card-body"><h5 class="card-title">' + chirp.user + '</h5><h6 class="card-subtitle mb-2 text-muted" style="font-weight: 300; font-size: .8rem;">"' + chirp.chirp + '"</h6><div class="row" style="font-size: 8px;"><div class="col-6"></div><div class="col-1"></div><div class="col-2 editButton" id="' + i + '" style="border: 1px solid #7ab; border-radius: 25px; background-color: #69a; font-size: 8px; color: #fff; padding: 0; text-align: center;">EDIT</div>&nbsp;<div class="col-2 deleteButton" id="' + i + '" style="border: 1px solid #7ab; border-radius: 25px; background-color: #69a; font-size: 8px; color: #fff; padding: 0; text-align: center;">DELETE</div></div></div></div>')
+                        }
+                    })
+                })
+                .then(() => {
+                    $(".editButton").on('click', function () {
+                        window.location = ("/edit" + "&id=" + this.id)
+                        $(this).attr('href', function () {
+                            return this.href + '&id=' + this.id;
+                        });
+                    })
+                    $(".deleteButton").on('click', function () {
+                        deleteChirp(this.id)
+                    })
+
+                })
+        }
+
+        $(document).ready(() => {
+            document.getElementById('postOverlay').style.visibility = "hidden";
+            document.getElementById('editOverlay').style.visibility = "hidden";
+            console.log("loaded")
+            getChirps();
+        });
+
+        $("#newChirp").click(() => {
+            document.getElementById('postOverlay').style.visibility = "visible";
+        })
+
+        $("#submitChirp").click(() => {
+            let theUser = $("#ncUser").val();
+            let theChirp = $("#ncChirp").val();
+            if (theUser == "" || theChirp == "") {
+                document.getElementById('postOverlay').style.visibility = "hidden";
+                alert("Username and chirp both required.");
+                $("#theUser").val("");
+                $("#theChirp").val("");
+            } else {
+                console.log(theUser, theChirp)
+                console.log("added")
+                document.getElementById('postOverlay').style.visibility = "hidden";
+                $.ajaxSetup({
+                    headers: {
+                        'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json'
+                    },
+                });
+                $.post("/api/chirps/", JSON.stringify({ user: theUser, chirp: theChirp }))
+                    .then(console.log("ok"))
+                    .then(window.location = ("/")
+);
+                $("#theUser").val("");
+                $("#theChirp").val("");
+            }
+        });
+        $(".editButton").click(() => {
+
+        })
+
+        function deleteChirp(theID) {
+
+            $.ajaxSetup({
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+            });
+            $.ajax({
+                url: '/api/chirps/' + theID,
+                type: 'DELETE',
+                success: function (data) {
+
+                }
+            });
+
+            window.location = ("/")
+            $(this).attr('href', function () {
+                return this.href + '&id=' + this.id;
+            });
+        }
+    </script>
+</body>
+
+</html>
