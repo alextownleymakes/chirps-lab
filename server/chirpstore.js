@@ -1,8 +1,8 @@
 const fs = require('fs');
 let chirps = { nextid: 0 };
 
-if(fs.existsSync('chirps.json')) {
-    chirps = JSON.parse(fs.readFileSync('chirps.json'));
+if(fs.existsSync('./server/chirps.json')) {
+    chirps = JSON.parse(fs.readFileSync('./server/chirps.json'));
 }
 
 let getChirps = () => {
@@ -29,7 +29,7 @@ let deleteChirp = id => {
 }
 
 let writeChirps = () => {
-    fs.writeFileSync('chirps.json', JSON.stringify(chirps));
+    fs.writeFileSync('./server/chirps.json', JSON.stringify(chirps));
 };
 
 module.exports = {
