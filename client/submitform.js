@@ -7,12 +7,3 @@ $(document).ready(function(){
     });
   });
 
-              // fetch('/api/chirps/', {
-            //     method: 'post',
-            //     headers: {
-            //         'Accept': 'application/json, text/plain, */*',
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({ user: "Joe Rogan", chirp: "ienfiwenfnwrklfnrf" })
-            // }).then(res => res.json())
-            //     .then(res => console.log(res));

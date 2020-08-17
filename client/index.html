@@ -112,12 +112,6 @@
 
         function deleteChirp(theID) {
 
-            $.ajaxSetup({
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                },
-            });
             $.ajax({
                 url: '/api/chirps/' + theID,
                 type: 'DELETE',
